@@ -1,6 +1,6 @@
-# raddio.app
+# radio.moai.link
 
-Source code for Lofi Radio Playlist on <https://raddio.app>
+Source code for Lofi Radio Playlist on <https://radio.moai.link>
 
 ![raddio.app screen capture](img/raddio_app.png)
 
