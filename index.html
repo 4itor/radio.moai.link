@@ -54,6 +54,9 @@
             height: 120px;
             margin: 12px;
             border-radius: 5px;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
             cursor: pointer;
             user-drag: none;
             -webkit-user-drag: none;
@@ -121,22 +124,25 @@
                 {
                     name: 'NIA Radio - Lofi',
                     image: 'Radio-NIA.png',
+                    imageEffects: "background-image: linear-gradient(135deg, rgba(40,130,255,0.5), rgba(35,210,120,0.5)), url('img/Radio-NIA.png'); background-blend-mode: screen;",
                     infoUrl: 'https://nia.nc/',
                     infoLocation: 'Nouméa, New Calédonia',
                     infoFlag: 'nc',
                     streamUrl: 'https://radio.nia.nc/radio/8020/lofi-hq-stream.aac'
                 },
                 {
-                    name: 'Chillsky.com',
-                    image: 'Radio-Chillsky.jpg',
-                    infoUrl: 'https://chillsky.com',
-                    infoLocation: 'London, United Kingdom',
-                    infoFlag: 'gb-eng',
-                    streamUrl: 'https://chill.radioca.st/stream'
+                    name: 'HunterFM LoFi',
+                    image: 'hunter-lofi.jpg',
+                    //imageEffects: 'filter: invert(1);',
+                    infoUrl: 'https://hunter.fm/lofi/',
+                    infoLocation: 'Brasil',
+                    infoFlag: 'br',
+                    streamUrl: 'https://live.hunter.fm/lofi_high'
                 },
                 {
                     name: 'Chillout Radio',
                     image: 'Radio-chillout_ru.png',
+                    imageEffects: "background-image: linear-gradient(135deg, rgba(86, 14, 8, 0.95), rgba(164, 44, 10, 0.92)), url('img/Radio-chillout_ru.png'); background-blend-mode: screen;",
                     infoUrl: 'https://chilloutradio.ru/',
                     infoLocation: 'Moscow, Russia',
                     infoFlag: 'ru',
@@ -174,16 +180,6 @@
                     infoFlag: 'ca',
                     streamUrl: 'https://kathy.torontocast.com:3590/;?type=http'
                 },
-                /*
-                {
-                    name: 'Радио Рекорд Lo-Fi',
-                    image: 'Radio-RecordLofi.jpg',
-                    infoUrl: 'https://www.radiorecord.ru/station/lofi',
-                    infoLocation: 'St. Petesburg, Russia',
-                    infoFlag: 'ru',
-                    streamUrl: 'https://radio.garden/api/ara/content/listen/z3aOLSzU/channel.mp3'
-                },
-                */
                 {
                     name: 'Lofi Radio',
                     image: 'Radio-Lofi.png',
@@ -211,6 +207,7 @@
                 {
                     name: 'ROVR - Check its Companion App!',
                     image: 'Radio-ROVR.png',
+                    imageEffects: "background-image: linear-gradient(135deg, rgba(44, 40, 8, 0.94), rgba(166, 154, 26, 0.9)), url('img/Radio-ROVR.png'); background-blend-mode: screen;",
                     infoUrl: 'https://www.rovr.live/',
                     infoLocation: 'London, United Kingdom',
                     infoFlag: 'gb-eng',
@@ -343,24 +340,33 @@
 
         }
 
+        // Optional per-radio CSS effects
+        function applyEffects(element, effects) {
+            if (!effects || typeof effects !== 'string') {
+                return;
+            }
+            element.style.cssText += ';' + effects;
+        }
+
         // Function to generate radio icons dynamically
         function generateRadioIcons() {
             console.log(radioList);
             radioList.forEach((radio, index) => {
-                const img = document.createElement('img');
-                if ((radio.image === undefined) || (radio.image === '')) {
-                    radio.image = 'default.png';
-                }
-                img.src = 'img/' + radio.image;
-                img.alt = radio.name;
-                img.title = radio.name;
-                img.className = 'radio-icon';
+                const icon = document.createElement('div');
+                const imageName = (radio.image === undefined) || (radio.image === '') ? 'default.png' : radio.image;
+                icon.style.backgroundImage = "url('img/" + imageName.replace(/'/g, "\\'") + "')";
+                icon.title = radio.name;
+                icon.setAttribute('role', 'button');
+                icon.setAttribute('aria-label', radio.name);
+                icon.className = 'radio-icon';
+                applyEffects(icon, radio.imageEffects);
+
                 if (index === initialSelectedIndex) {
-                    img.classList.add('selected');
+                    icon.classList.add('selected');
                     updateRadioInfo(index);
                 }
-                img.onclick = () => changeChannel(index, true);
-                radioListDiv.appendChild(img);
+                icon.onclick = () => changeChannel(index, true);
+                radioListDiv.appendChild(icon);
             });
         }
 
