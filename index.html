@@ -54,6 +54,8 @@
             height: 120px;
             margin: 12px;
             border-radius: 5px;
+            position: relative;
+            overflow: hidden;
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
@@ -61,6 +63,16 @@
             user-drag: none;
             -webkit-user-drag: none;
             transition: transform 0.4s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .radio-icon-overlay {
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            pointer-events: none;
         }
 
         .selected {
@@ -124,7 +136,7 @@
                 {
                     name: 'NIA Radio - Lofi',
                     image: 'Radio-NIA.png',
-                    imageEffects: "background-image: linear-gradient(135deg, rgba(40,130,255,0.5), rgba(35,210,120,0.5)), url('img/Radio-NIA.png'); background-blend-mode: screen;",
+                    imageEffects: 'linear-gradient(135deg, rgba(0,150,255,0.95), rgba(0,255,170,0.95))',
                     infoUrl: 'https://nia.nc/',
                     infoLocation: 'Nouméa, New Calédonia',
                     infoFlag: 'nc',
@@ -142,7 +154,7 @@
                 {
                     name: 'Chillout Radio',
                     image: 'Radio-chillout_ru.png',
-                    imageEffects: "background-image: linear-gradient(135deg, rgba(86, 14, 8, 0.95), rgba(164, 44, 10, 0.92)), url('img/Radio-chillout_ru.png'); background-blend-mode: screen;",
+                    imageEffects: 'linear-gradient(135deg, rgba(255, 90, 0, 0.95), rgba(255, 200, 0, 0.95))',
                     infoUrl: 'https://chilloutradio.ru/',
                     infoLocation: 'Moscow, Russia',
                     infoFlag: 'ru',
@@ -207,7 +219,7 @@
                 {
                     name: 'ROVR - Check its Companion App!',
                     image: 'Radio-ROVR.png',
-                    imageEffects: "background-image: linear-gradient(135deg, rgba(44, 40, 8, 0.94), rgba(166, 154, 26, 0.9)), url('img/Radio-ROVR.png'); background-blend-mode: screen;",
+                    imageEffects: 'linear-gradient(135deg, rgba(255, 170, 0, 0.95), rgba(255, 235, 90, 0.95))',
                     infoUrl: 'https://www.rovr.live/',
                     infoLocation: 'London, United Kingdom',
                     infoFlag: 'gb-eng',
@@ -340,12 +352,20 @@
 
         }
 
-        // Optional per-radio CSS effects
-        function applyEffects(element, effects) {
-            if (!effects || typeof effects !== 'string') {
-                return;
+        // imageEffects is an optional overlay layer (e.g. linear-gradient(...)).
+        function applyImageLayers(element, imageName, imageEffects) {
+            const escapedImageName = imageName.replace(/'/g, "\\'");
+            const imageUrl = "url('img/" + escapedImageName + "')";
+
+            element.style.backgroundImage = imageUrl;
+
+            if (typeof imageEffects === 'string' && imageEffects.trim() !== '') {
+                const overlay = document.createElement('div');
+                overlay.className = 'radio-icon-overlay';
+                overlay.style.backgroundImage = imageEffects;
+                overlay.style.opacity = '0.25';
+                element.appendChild(overlay);
             }
-            element.style.cssText += ';' + effects;
         }
 
         // Function to generate radio icons dynamically
@@ -354,12 +374,11 @@
             radioList.forEach((radio, index) => {
                 const icon = document.createElement('div');
                 const imageName = (radio.image === undefined) || (radio.image === '') ? 'default.png' : radio.image;
-                icon.style.backgroundImage = "url('img/" + imageName.replace(/'/g, "\\'") + "')";
                 icon.title = radio.name;
                 icon.setAttribute('role', 'button');
                 icon.setAttribute('aria-label', radio.name);
                 icon.className = 'radio-icon';
-                applyEffects(icon, radio.imageEffects);
+                applyImageLayers(icon, imageName, radio.imageEffects);
 
                 if (index === initialSelectedIndex) {
                     icon.classList.add('selected');
